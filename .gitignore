@@ -1,0 +1,5 @@
+output
+log
+*.log
+*.exe
+*.dll
