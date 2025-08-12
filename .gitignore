@@ -1,3 +1,9 @@
+ADCmds/Source/KnownDCs.json
+Proxy/Source/*.pac
+Proxy/Source/COPYING.txt
+ADCmds/Source/CachedDomainController.json
+Password/Source/StoredPasswords.json
+Basic/Source/CipherList.csv
 output
 log
 *.log

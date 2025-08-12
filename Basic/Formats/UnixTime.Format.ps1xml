@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+<ViewDefinitions>
+    <View>
+        <Name>UnixTime</Name>
+        <ViewSelectedBy>
+            <TypeName>PlodahPS.UnixTime</TypeName>
+        </ViewSelectedBy>
+        <TableControl>
+            <TableHeaders>
+                <TableColumnHeader>
+                    <Label>UnixTime</Label>
+                    <Alignment>Right</Alignment>
+                    <Width>18</Width> 
+                </TableColumnHeader>
+                <TableColumnHeader>
+                    <Label>DateTime</Label>
+                    <Alignment>Right</Alignment>
+                    <Width>28</Width>
+                </TableColumnHeader>
+                <TableColumnHeader>
+                    <Label>Epoch</Label>
+                    <Alignment>Right</Alignment>
+                    <Width>28</Width>
+                </TableColumnHeader>
+            </TableHeaders>
+            <TableRowEntries>
+                <TableRowEntry>
+                    <TableColumnItems>
+                        <TableColumnItem>
+                            <!--- <PropertyName>UnixTime</PropertyName>  -->
+                            <ScriptBlock>("{0:n6}" -f $_.UnixTime).replace(",","")</ScriptBlock>
+                        </TableColumnItem>
+                        <TableColumnItem>
+                            <!--- <PropertyName>DateTime</PropertyName>  -->
+                            <ScriptBlock>Get-Date -Date $_.DateTime -Format "yyyy-MM-dd HH:mm:ss.ffffff"</ScriptBlock>
+                        </TableColumnItem>
+                        <TableColumnItem>
+                            <!--- <PropertyName>Epoch</PropertyName> -->
+                            <ScriptBlock>Get-Date -Date $_.Epoch -Format "yyyy-MM-dd HH:mm:ss.ffffff"</ScriptBlock>
+                        </TableColumnItem>
+                    </TableColumnItems>
+                </TableRowEntry>
+            </TableRowEntries>
+        </TableControl>
+    </View>
+</ViewDefinitions>
+</Configuration>
