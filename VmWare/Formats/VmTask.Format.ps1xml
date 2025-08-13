@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>VmTask</Name>
+            <ViewSelectedBy>
+                <TypeName>PlodahPS.VmTask</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Width>15</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Width>12</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Width>48</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Start</Label>
+                        <Width>15</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Finish</Label>
+                        <Width>15</Width>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Server</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>State</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Description</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>if($_.Start){Get-Date -Date $_.Start -Format "dd/MM HH:mm:ss"} else{"-"}</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>if($_.Finish){Get-Date -Date $_.Finish -Format "dd/MM HH:mm:ss"} else{"-"}</ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>
