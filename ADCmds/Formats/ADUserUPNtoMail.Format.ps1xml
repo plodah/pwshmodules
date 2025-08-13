@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>UPNtoMail</Name>
+            <ViewSelectedBy>
+                <TypeName>PlodahPS.UPNtoMail</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>SAM</Label>
+                        <Width>14</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Width>28</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Width>28</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Width>28</Width>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>SamAccountName</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>OldUPN</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>NewUPN</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>mail</PropertyName>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>
