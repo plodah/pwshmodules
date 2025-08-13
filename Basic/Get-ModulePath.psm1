@@ -1,7 +1,8 @@
 ﻿function Get-ModulePath {
     [CmdletBinding( )]
     Param( 
-        [switch]$SuppressWarnings
+        [switch]
+        $SuppressWarnings
     )
     
     $PathSep = [system.io.path]::pathseparator
@@ -20,13 +21,17 @@
     }
     $Existing
 }
+
 function Add-ModulePath {
     [CmdletBinding( )]
     Param(    
         [parameter ( )]
-        [string[]]$Path,
+        [string[]]
+        $Path,
+        
         [parameter ( )]
-        [switch]$Force
+        [switch]
+        $Force
     )
     begin{
         $PathSep = [system.io.path]::pathseparator
@@ -65,11 +70,13 @@ function Add-ModulePath {
         }
     }
 }
+
 function Remove-ModulePath {
     [CmdletBinding( )]
     Param(    
         [parameter ( )]
-        [string[]]$Path
+        [string[]]
+        $Path
     )
     begin{
         $PathSep = [system.io.path]::pathseparator
@@ -97,8 +104,10 @@ function Remove-ModulePath {
         }
     }
 }
+
 function Optimize-ModulePath {
     param(
+
     )
     $PathSep = [system.io.path]::pathseparator
     $Unique = Get-ModulePath -SuppressWarnings | Select-Object -Unique
@@ -111,36 +120,4 @@ function Optimize-ModulePath {
     }
     $Exists
     [System.Environment]::SetEnvironmentVariable("PSModulePath", ($Exists -join $PathSep), "Machine")
-}
-function Set-ModulePath {
-    [CmdletBinding(DefaultParameterSetName="Live")]
-    param (
-        [Parameter( Mandatory=$true,
-                    ParameterSetName='Live')]
-        [switch]
-        $Live,
-        [Parameter( Mandatory=$true,
-                    ParameterSetName='Dev')]
-        [switch]
-        $Dev
-    )
-    $LivePath = "C:\Mtemp\PwshSharedModules"
-    $DevPath = "C:\Mtemp\PwshDevModules\MLPwshModules"
-    $EnvPaths = Get-ModulePath -Source Environmental    | Select-Object -Unique 
-    $RegPaths = Get-ModulePath -Source Registry         | Select-Object -Unique 
-    $EnvIndex = $EnvPaths.IndexOf( ($EnvPaths | Where-Object {$_ -like "C:\Mtemp\*"} ) )
-    $RegIndex = $RegPaths.IndexOf( ($RegPaths | Where-Object {$_ -like "C:\Mtemp\*"} ) )
-    
-    if($Live){
-        $EnvPaths[$EnvIndex] = $LivePath
-        $RegPaths[$RegIndex] = $LivePath
-    }
-    elseif($Dev){
-        $EnvPaths[$EnvIndex] = $DevPath
-        $RegPaths[$RegIndex] = $DevPath
-    }
-    $EnvPaths = $EnvPaths | Sort-Object
-    $RegPaths = $RegPaths | Where-Object {$_ -notlike "C:\Users\*"} | Sort-Object
-    $env:PSModulePath = ($RegPaths -join ";")
-    Set-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name PSModulePath -Value ($EnvPaths -join ";")
 }
