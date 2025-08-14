@@ -33,12 +33,12 @@
         $StoredBy = "$($env:USERDOMAIN)\$($env:USERNAME)"
         if(Test-Path $PwDbPath){
             try{
-                $PasswordDB = Get-Content $PwDbPath | ConvertFrom-Json 
-                $PasswordDB = $PasswordDB | Where-Object -FilterScript {$_.StoredBy -eq $StoredBy}
+                [PsCustomObject[]] $PasswordDB = Get-Content $PwDbPath | ConvertFrom-Json 
+                [PsCustomObject[]] $PasswordDB = $PasswordDB | Where-Object -FilterScript {$_.StoredBy -eq $StoredBy}
                 #Some reason this does not work on one line.
             }
             catch{
-                $PasswordDB = $null
+                [PsCustomObject[]] $PasswordDB = @()
                 Write-Error "Password DB exists but wasn't in a valid format. "
             }
         }
@@ -101,34 +101,45 @@
             }
         }
     }
-    end{
-    }
+    end{ }
 }
 
 function New-StoredPassword {
     [CmdletBinding()] 
     param(
         [Parameter(Mandatory=$true)]
-        [string] $Username,
+        [string]
+        $Username,
+
         [Parameter( )]
-        [string] $UserDomain=".",
+        [string]
+        $UserDomain=".",
+
         [Parameter( )]
-        [securestring] $Password,
+        [securestring]
+        $Password,
+
         [Parameter( )]
-        [string] $PasswordAsPlainText,
+        [string]
+        $PasswordAsPlainText,
+
         [Parameter( )]
-        [switch] $Overwrite,
+        [alias("Overwrite")]
+        [switch]
+        $Force,
+
         [Parameter( )]
-        [string] $PwDbPath="$PSScriptRoot/Source/StoredPasswords.json"
+        [string]
+        $PwDbPath="$PSScriptRoot/Source/StoredPasswords.json"
     )
     begin{
         $StoredBy = "$($env:USERDOMAIN)\$($env:USERNAME)"
         if(Test-Path $PwDbPath -ErrorAction SilentlyContinue){
             try{
-                $PasswordDB = Get-Content $PwDbPath | ConvertFrom-Json
+                [PsCustomObject[]] $PasswordDB = Get-Content $PwDbPath | ConvertFrom-Json
             }
             catch{
-                $PasswordDB = $null
+                [PsCustomObject[]] $PasswordDB = @()
                 Write-Warning "Password DB exists but wasn't in a valid format. It'll be overwritten when by any added passwords"
             }
         }
@@ -137,13 +148,13 @@ function New-StoredPassword {
         if($PasswordDB){
             $ExistingPassword = $PasswordDB | Where-Object -FilterScript {$_.StoredBy -eq $StoredBy -and $_.UserName -eq $UserName -and $_.UserDomain -eq $UserDomain}
             if($ExistingPassword){
-                if($Overwrite){
-                    Write-Warning "A password with the same details exists, dated $($ExistingPassword.Updated). This is being overwritten."
-                    $PasswordDB = $PasswordDB | Where-Object {$_ -ne $ExistingPassword}
+                if($Force){
+                    Write-Warning "A password with the same details exists, dated $($ExistingPassword.DateModified). This is being overwritten."
+                    [PsCustomObject[]] $PasswordDB = $PasswordDB | Where-Object {$_ -ne $ExistingPassword}
                     $ReadyToAdd = $true
                 }
                 else{
-                    Write-Error "A password with the same details exists, dated $($ExistingPassword.Updated). Specify the -Overwrite parameter to replace it"
+                    Write-Error "A password with the same details exists, dated $($ExistingPassword.DateModified). Specify the -Force parameter to replace it"
                     $ReadyToAdd = $false
                 }
             }
@@ -152,7 +163,6 @@ function New-StoredPassword {
             }
         }
         else{
-            $PasswordDB = @()
             $ReadyToAdd = $true
         }
         if($ReadyToAdd){
@@ -169,7 +179,7 @@ function New-StoredPassword {
                 PasswordAsSecureString = $Password | ConvertFrom-SecureString
                 DateModified = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
             }
-            $PasswordDB +=$NewPasswordObject
+            $PasswordDB += $NewPasswordObject
             $PasswordDBJson = $PasswordDB | ConvertTo-Json
             if(($PasswordDB | Measure-Object | Select-Object -ExpandProperty Count ) -eq 1){
                 $PasswordDBJson = "[$PasswordDBJson]"
@@ -177,31 +187,36 @@ function New-StoredPassword {
             $PasswordDBJson | Out-File $PwDbPath -Encoding UTF8
         }
     }
-    end{
-    }
+    end{ }
 }
 
 function Remove-StoredPassword {
     [CmdletBinding()] 
     param(
         [Parameter(Mandatory=$true,ParameterSetName="One")]
-        [string] $Username,
+        [string]
+        $Username,
+
         [Parameter( )]
-        [string] $UserDomain=".",
+        [string]
+        $UserDomain=".",
+
         [Parameter(Mandatory=$true,ParameterSetName="All")]
-        [switch] $All,
+        [switch]
+        $All,
+
         [Parameter( )]
-        [string] $PwDbPath="$PSScriptRoot/Source/StoredPasswords.json"
+        [string]
+        $PwDbPath="$PSScriptRoot/Source/StoredPasswords.json"
     )
     begin{
-        Write-Warning "I haven't finished this cmdlet yet."
         $StoredBy = "$($env:USERDOMAIN)\$($env:USERNAME)"
         if(Test-Path $PwDbPath){
             try{
-                $PasswordDB = Get-Content $PwDbPath | ConvertFrom-Json
+                [PsCustomObject[]] $PasswordDB = Get-Content $PwDbPath | ConvertFrom-Json
             }
             catch{
-                $PasswordDB = $null
+                [PsCustomObject[]] $PasswordDB = @()
                 Write-Warning "Password DB exists but wasn't in a valid format."
             }
         }
@@ -210,22 +225,18 @@ function Remove-StoredPassword {
         if($PasswordDB){
             $ExistingPassword = $PasswordDB | Where-Object -FilterScript {$_.StoredBy -eq $StoredBy}
             if(-not $all){
-            
                 $ExistingPassword = $ExistingPassword | Where-Object -FilterScript {$_.UserName -eq $UserName -and $_.UserDomain -eq $UserDomain}
             }
             if($ExistingPassword){
-                $PasswordDB = $PasswordDB | Where-Object -FilterScript {$_ -notin $ExistingPassword}
+                [PsCustomObject[]] $PasswordDB = $PasswordDB | Where-Object -FilterScript {$_ -notin $ExistingPassword}
             }
-            else{
-            }
+            else{ }
         }
         $PasswordDBJson = $PasswordDB | ConvertTo-Json
         if(($PasswordDB | Measure-Object | Select-Object -ExpandProperty Count ) -le 1){
             $PasswordDBJson = "[$PasswordDBJson]"
         }
-        $PasswordDBJson | Out-File $PwDbPath -Encoding UTF8
-        
+        $PasswordDBJson | Out-File $PwDbPath -Encoding UTF8   
     }
-    end{
-    }
+    end{ }
 }
